@@ -2,7 +2,7 @@
 # OMNeT++/OMNEST Makefile for Qbv
 #
 # This file was generated with the command:
-#  opp_makemake -f --deep -I../../inet/src -L../../inet/out/$$\(CONFIGNAME\)/src -lINET -DINET_IMPORT -KINET_PROJ=../../inet
+#  opp_makemake -f --deep -L../../inet/out/$$\(CONFIGNAME\)/src -lINET -DINET_IMPORT -KINET_PROJ=../../inet
 #
 
 # Name of target to be created (-o option)
@@ -15,7 +15,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LI
 #USERIF_LIBS = $(QTENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I../../inet/src -I. -Ihardwareclock
+INCLUDE_PATH = -I.
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -30,18 +30,10 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = \
-    $O/gPtp.o \
-    $O/tableGPTP.o \
-    $O/EtherGPTP.o \
-    $O/hardwareclock/driftsource.o \
-    $O/hardwareclock/hardwareclock.o \
-    $O/hardwareclock/storagewindow.o \
-    $O/gPtpPacket_m.o
+OBJS =
 
 # Message files
-MSGFILES = \
-    gPtpPacket.msg
+MSGFILES =
 
 # SM files
 SMFILES =
@@ -128,82 +120,13 @@ clean:
 	$(Q)-rm -rf $O
 	$(Q)-rm -f Qbv Qbv.exe libQbv.so libQbv.a libQbv.dll libQbv.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h ./*_sm.cc ./*_sm.h
-	$(Q)-rm -f hardwareclock/*_m.cc hardwareclock/*_m.h hardwareclock/*_sm.cc hardwareclock/*_sm.h
 
 cleanall: clean
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc hardwareclock/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES) $(SM_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/EtherGPTP.o: EtherGPTP.cc \
-	EtherGPTP.h \
-	gPtp.h \
-	gPtpPacket_m.h \
-	hardwareclock/hardwareclock.h \
-	tableGPTP.h \
-	$(INET_PROJ)/src/inet/common/Compat.h \
-	$(INET_PROJ)/src/inet/common/INETDefs.h \
-	$(INET_PROJ)/src/inet/common/INETMath.h \
-	$(INET_PROJ)/src/inet/common/InitStages.h \
-	$(INET_PROJ)/src/inet/common/lifecycle/ILifecycle.h \
-	$(INET_PROJ)/src/inet/common/lifecycle/NodeStatus.h \
-	$(INET_PROJ)/src/inet/common/queue/IPassiveQueue.h \
-	$(INET_PROJ)/src/inet/features.h \
-	$(INET_PROJ)/src/inet/linklayer/base/MACBase.h \
-	$(INET_PROJ)/src/inet/linklayer/common/Ieee802Ctrl_m.h \
-	$(INET_PROJ)/src/inet/linklayer/common/MACAddress.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/EtherFrame_m.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/EtherMACBase.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/Ethernet.h
-$O/gPtp.o: gPtp.cc \
-	gPtp.h \
-	gPtpPacket_m.h \
-	$(INET_PROJ)/src/inet/common/Compat.h \
-	$(INET_PROJ)/src/inet/common/INETDefs.h \
-	$(INET_PROJ)/src/inet/common/InitStages.h \
-	$(INET_PROJ)/src/inet/features.h \
-	$(INET_PROJ)/src/inet/linklayer/common/Ieee802Ctrl_m.h \
-	$(INET_PROJ)/src/inet/linklayer/common/MACAddress.h \
-	$(INET_PROJ)/src/inet/networklayer/common/L3Address.h \
-	$(INET_PROJ)/src/inet/networklayer/common/ModuleIdAddress.h \
-	$(INET_PROJ)/src/inet/networklayer/common/ModulePathAddress.h \
-	$(INET_PROJ)/src/inet/networklayer/contract/ipv4/IPv4Address.h \
-	$(INET_PROJ)/src/inet/networklayer/contract/ipv6/IPv6Address.h \
-	$(INET_PROJ)/src/inet/transportlayer/contract/udp/UDPControlInfo_m.h
-$O/gPtpPacket_m.o: gPtpPacket_m.cc \
-	gPtp.h \
-	gPtpPacket_m.h
-$O/tableGPTP.o: tableGPTP.cc \
-	tableGPTP.h
-$O/hardwareclock/driftsource.o: hardwareclock/driftsource.cc \
-	hardwareclock/driftsource.h
-$O/hardwareclock/hardwareclock.o: hardwareclock/hardwareclock.cc \
-	EtherGPTP.h \
-	gPtp.h \
-	gPtpPacket_m.h \
-	hardwareclock/driftsource.h \
-	hardwareclock/hardwareclock.h \
-	hardwareclock/storagewindow.h \
-	tableGPTP.h \
-	$(INET_PROJ)/src/inet/common/Compat.h \
-	$(INET_PROJ)/src/inet/common/INETDefs.h \
-	$(INET_PROJ)/src/inet/common/INETMath.h \
-	$(INET_PROJ)/src/inet/common/InitStages.h \
-	$(INET_PROJ)/src/inet/common/lifecycle/ILifecycle.h \
-	$(INET_PROJ)/src/inet/common/lifecycle/NodeStatus.h \
-	$(INET_PROJ)/src/inet/common/queue/IPassiveQueue.h \
-	$(INET_PROJ)/src/inet/features.h \
-	$(INET_PROJ)/src/inet/linklayer/base/MACBase.h \
-	$(INET_PROJ)/src/inet/linklayer/common/Ieee802Ctrl_m.h \
-	$(INET_PROJ)/src/inet/linklayer/common/MACAddress.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/EtherFrame_m.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/EtherMACBase.h \
-	$(INET_PROJ)/src/inet/linklayer/ethernet/Ethernet.h
-$O/hardwareclock/storagewindow.o: hardwareclock/storagewindow.cc \
-	hardwareclock/driftsource.h \
-	hardwareclock/hardwareclock.h \
-	hardwareclock/storagewindow.h
 

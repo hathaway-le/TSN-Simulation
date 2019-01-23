@@ -5,32 +5,64 @@
 
 #include "inet/common/INETDefs.h"
 
-#include "inet/applications/udpapp/UDPBasicApp.h"
+#include "inet/applications/base/ApplicationBase.h"
 #include "inet/transportlayer/contract/udp/UDPSocket.h"
-#include "inet/common/ModuleAccess.h"
-#include "inet/networklayer/common/L3AddressResolver.h"
-#include "inet/networklayer/contract/IInterfaceTable.h"
+#include "inet/hardwareclock/hardwareclock.h"
 
 using namespace omnetpp;
 /**
  * UDP application. See NED for more info.
  */
 namespace inet {
-    class INET_API QbvUDPApp : public UDPBasicApp
+    class INET_API QbvUDPApp : public ApplicationBase
     {
-      protected:
-        // chooses random destination address
-        virtual void sendPacket();
-        virtual void initialize(int stage) override;
-        virtual void processSend();
+        protected:
+          enum SelfMsgKinds { START = 1, SEND, STOP };
 
-        double sendInterval;
+          // parameters
+          std::vector<L3Address> destAddresses;
+          int localPort = -1, destPort = -1;
+          simtime_t startTime;
+          simtime_t stopTime;
+          const char *packetName = nullptr;
 
-      public:
-        void scheduleAtInObject(const SimTime realtime, cMessage* msg);
+          // state
+          UDPSocket socket;
+          cMessage *selfMsg = nullptr;
 
-      private:
-        long int TsnVLANId;
+          // statistics
+          int numSent = 0;
+          int numReceived = 0;
+
+          static simsignal_t sentPkSignal;
+          static simsignal_t rcvdPkSignal;
+
+          virtual int numInitStages() const override { return NUM_INIT_STAGES; }
+          virtual void initialize(int stage) override;
+          virtual void handleMessageWhenUp(cMessage *msg) override;
+          virtual void finish() override;
+
+          // chooses random destination address
+          virtual L3Address chooseDestAddr();
+          virtual void sendPacket();
+          virtual void processPacket(cPacket *msg);
+          virtual void setSocketOptions();
+
+          virtual void processStart();
+          virtual void processSend();
+          virtual void processStop();
+
+          virtual bool handleNodeStart(IDoneCallback *doneCallback) override;
+          virtual bool handleNodeShutdown(IDoneCallback *doneCallback) override;
+          virtual void handleNodeCrash() override;
+
+        public:
+          void scheduleAtInObject(const SimTime realtime, cMessage* msg);
+          ~QbvUDPApp();
+        private:
+          long int TsnVLANId;
+          HardwareClock* clockGptp = nullptr;
+          double sendInterval;
     };
 }
 #endif

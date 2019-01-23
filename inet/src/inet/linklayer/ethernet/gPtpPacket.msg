@@ -7,9 +7,10 @@
 
 cplusplus {{
 //#include "simtime.h"
-#include "gPtp.h"
+#include "inet/linklayer/ethernet/gPtp.h"
 #include "omnetpp.h"
 }};
+namespace inet;
 
 class noncobject omnetpp::SimTime;
 

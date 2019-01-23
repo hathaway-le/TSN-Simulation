@@ -18,7 +18,7 @@
 //
 //	Modifier: Hathaway Le
 
-package qbv.hardwareclock;
+package inet.hardwareclock;
 
 moduleinterface IHardwareClock
 {

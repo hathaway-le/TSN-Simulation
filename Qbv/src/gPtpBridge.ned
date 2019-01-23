@@ -15,7 +15,8 @@ import inet.linklayer.contract.IWiredNic;
 import inet.linklayer.configurator.L2NodeConfigurator;
 import inet.linklayer.ethernet.switch.MACRelayUnit;
 import inet.networklayer.common.InterfaceTable;
-import qbv.hardwareclock.IHardwareClock;
+import inet.hardwareclock.IHardwareClock;
+import inet.linklayer.ethernet.TableGPTP;
 
 module GPtpBridge
 {

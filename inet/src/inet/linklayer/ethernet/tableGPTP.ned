@@ -5,7 +5,7 @@
 //           University of Rostock, Germany
 // Modifier: Hathaway Le  
 
-package qbv;
+package inet.linklayer.ethernet;
 
 //
 // this will be used to store a value of correctionField and rateRatio

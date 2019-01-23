@@ -15,6 +15,7 @@ import inet.linklayer.ethernet.EtherEncap;
 import inet.linklayer.ethernet.EtherQoSQueue;
 import inet.linklayer.ethernet.IEtherEncap;
 import inet.common.queue.IOutputQueue;
+import inet.linklayer.ethernet.EtherGPTP;
 
 module EthernetInterfaceGPTP like IWiredNic
 {

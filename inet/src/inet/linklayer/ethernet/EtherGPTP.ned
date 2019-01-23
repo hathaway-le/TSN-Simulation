@@ -5,7 +5,7 @@
 //           University of Rostock, Germany
 // Modifier: Hathaway Le 
 
-package qbv;
+package inet.linklayer.ethernet;
 
 //
 // This module is a part of EthernetInterfaceGPTP compound module and is placed between MAC and Encap/Queue

@@ -22,7 +22,8 @@ import inet.power.contract.IEnergyGenerator;
 //import inet.power.contract.IEnergyManagement;
 import inet.power.contract.IEnergyStorage;
 import inet.node.inet.INetworkNode;
-import qbv.hardwareclock.IHardwareClock;
+import inet.hardwareclock.IHardwareClock;
+import inet.linklayer.ethernet.TableGPTP;
 
 module GPtpEndstation like INetworkNode
 {
