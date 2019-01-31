@@ -14,7 +14,8 @@
 //
 //	TSN Non-Timebased Simulation Framework
 //		2016, Peter Heise <peter.heise@airbus.com>
-//
+//  Modifier: Hathaway Le
+
 
 #include <inet/linklayer/ethernet/Dot1QEncap.h>
 
@@ -24,9 +25,10 @@ namespace inet {
 
 		void Dot1QEncap::initialize() {
 			EtherEncap::initialize();
-			Dot1QVlanID = (uint32_t) par("dot1Q_NullStreamVlan").longValue();
+			Dot1QVlanID = (uint16_t) par("dot1Q_NullStreamVlan").longValue();
+			Dot1QVlanprio = (uint8_t) par("dot1Q_NullStreampriority").longValue();
 		}
-/*
+
 		void Dot1QEncap::processPacketFromHigherLayer(cPacket *msg) {
 
 			if (msg->getByteLength() > MAX_ETHERNET_DATA_BYTES)
@@ -50,22 +52,27 @@ namespace inet {
 			dot1qFrame->setPCP(DEFAULT_PCP);
 			dot1qFrame->setDEI(DEFAULT_DEI);
 
-			if (cPacket *match = hasParRecursive(msg, "packet_vlan"))//在UDPPacketGen会添加ini文件的中的配置，vlan值在那时候就已经确定
+			if (cPacket *match = hasParRecursive(msg, "packet_vlan"))//在udpapp会添加ini文件的中的配置，vlan值在那时候就已经确定
 				dot1qFrame->setVID(match->par("packet_vlan").longValue());
 			else
 				dot1qFrame->setVID(Dot1QVlanID);
 
-			delete etherctrl;
+            if (cPacket *match = hasParRecursive(msg, "packet_priority"))
+                dot1qFrame->setPCP(match->par("packet_priority").longValue());
+            else
+                dot1qFrame->setPCP(Dot1QVlanprio);
 
+			delete etherctrl;
+			dot1qFrame->setByteLength(18+4);
 			dot1qFrame->encapsulate(msg);
 			if (dot1qFrame->getByteLength() < MIN_ETHERNET_FRAME_BYTES) {
-				dot1qFrame->setByteLength(MIN_ETHERNET_FRAME_BYTES);  // "padding"
+				dot1qFrame->setByteLength(MIN_ETHERNET_FRAME_BYTES);
 			}
 
 			EV_INFO << "Sending " << dot1qFrame << " to lower layer.\n";
 			send(dot1qFrame, "lowerLayerOut");
 
 		}
-*/
+
 
 }

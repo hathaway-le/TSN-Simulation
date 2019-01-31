@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //
+// Modifier: Hathaway Le
 
 #include "inet/linklayer/ethernet/EtherTSN.h"
 
@@ -450,7 +451,6 @@ void EtherTSN::getNextFrameFromQueue()//在endIFG处理函数使用，并没有�
         {
             if (txQueue.extQueue->getNumPendingRequests() == 0)
             {
-                EV<<"???"<<endl;
                 txQueue.extQueue->requestPacket();
             }
         }

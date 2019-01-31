@@ -24,6 +24,8 @@
 #include <inet/hardwareclock/storagewindow.h>
 #include "inet/linklayer/ethernet/EtherGPTP.h"
 #include <inet/applications/udpapp/QbvUDPApp.h>
+#include <inet/linklayer/ethernet/tableGPTP.h>
+
 #include <exception>
 
 #include <iostream>
@@ -104,6 +106,14 @@ namespace inet {
             app_queue.pop();
         }
 
+        while (qbv_queue.size() > 0) {
+            const Qbv_QueuedMessage& q = qbv_queue.top();
+
+            delete q.msg;
+
+            qbv_queue.pop();
+        }
+
         // NOTE: selfMsg isn't deleted
     }
 
@@ -177,6 +187,23 @@ namespace inet {
 
                 app_queue.pop();
             }
+
+            while (qbv_queue.size() > 0) {
+                const Qbv_QueuedMessage& q = qbv_queue.top();
+                simtime_t real;
+
+                if (!HWtoSimTime(q.time, real)) {
+                    // requested timestamp is still not in
+                    // the storage window (and the timestamps
+                    // of the following messages also not)
+                    break;
+                }
+
+                q.self->scheduleAtInObject(real, q.msg);
+
+                qbv_queue.pop();
+            }
+
             nextUpdate(msg);
         }
     }
@@ -236,6 +263,9 @@ namespace inet {
         simtime_t t = now - hp.realTime;
 
         return hp.hardwareTime + t * (1 + hp.drift) + offset_self;
+        //仿真校准无法改变时钟模型的硬件时间，因此，scheduleAtHWtime配合getHWtime时有误差，因为return值和当前接受信息的时间simTime()并不一样
+        //发送时间那边有误差,base+interval，此处是base有误差，但是在不计算每个bridge处理时间损耗的情况下，误差小于ns（已经是e-10了）
+        //放在硬件上的话，时间戳打在mac这边，误差也不打，计算频率比例那边可能会有误差，omnet这边频率相差不大，误差也小
     }
 
     void HardwareClock::setOffset_self(simtime_t value)
@@ -277,8 +307,16 @@ namespace inet {
             // message is in the past
             return;
         }
-
-        simtime_t real;
+        if(time<=simTime())
+        {
+            self->scheduleAtInObject(simTime(),msg);
+            //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
+        }
+        else
+        {
+            self->scheduleAtInObject(time,msg);
+        }
+/*        simtime_t real;
 
         if (HWtoSimTime(time, real))
         {
@@ -308,7 +346,7 @@ namespace inet {
             {
                 queue.push(QueuedMessage(time, msg,self));//大于窗最大值的话放入优先级队列，QueuedMessage的operator<重载了
             }
-        }
+        }*/
     }
 
     void HardwareClock::app_scheduleAtHWtime(const simtime_t time, cMessage* msg, QbvUDPApp* self)
@@ -354,6 +392,62 @@ namespace inet {
                 app_queue.push(App_QueuedMessage(time, msg,self));//大于窗最大值的话放入优先级队列，QueuedMessage的operator<重载了
             }
         }
+    }
+
+    void HardwareClock::qbv_scheduleAtHWtime(const simtime_t time, cMessage* msg, TableGPTP* self)
+    {
+        Enter_Method_Silent();
+        take(msg);//your contain class has to take ownership of the inserted messages, and release them when they are removed from the message
+
+        simtime_t nowHW = getHWtime();
+
+        if (time <= nowHW) {
+            // message is in the past
+            return;
+        }
+        if(time<=simTime())
+        {
+            self->scheduleAtInObject(simTime(),msg);
+            //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
+        }
+        else
+        {
+            self->scheduleAtInObject(time,msg);
+        }
+/*
+        simtime_t real;
+
+        if (HWtoSimTime(time, real))
+        {
+            //判断出是否在窗口内
+            // hardware timestamp in storage window
+            EV<<"time "<<time<<endl;
+            EV<<"real "<<real<<endl;
+            if(real<=simTime())
+            {
+    //          std::cout<<"real "<<real.dbl()<<" simTime "<<simTime().dbl()<<endl;
+                self->scheduleAtInObject(simTime(),msg);
+                //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
+            }
+            else
+            {
+                self->scheduleAtInObject(real,msg);
+            }
+
+        } else {//hwtime大于窗口的被放入队列，小于的已经在前面return了
+            // hardware timestamp not yet in storage
+            // window, keep message for later
+            //不在窗内的time无法计算realtime
+
+            if(time < storageWindow->at(0).hardwareTime )
+            {
+                self->scheduleAtInObject(simTime(),msg);//在允许误差的情况下，让所有消息都发送出去
+            }
+            else
+            {
+                qbv_queue.push(Qbv_QueuedMessage(time, msg,self));//大于窗最大值的话放入优先级队列，QueuedMessage的operator<重载了
+            }
+        }*/
     }
 
     std::vector<HardwareClock*> HardwareClock::findClocks(const cModule* parent)

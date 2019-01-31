@@ -1,4 +1,3 @@
-
 // authors: Hathaway Le 
 
 package qbv.simulations;

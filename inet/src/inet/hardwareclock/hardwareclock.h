@@ -32,7 +32,7 @@ namespace inet {
 class EtherGPTP;
 class StorageWindow;
 class QbvUDPApp;
-
+class TableGPTP;
     /// \brief Implementation of a hardware (real, non perfect) clock.
     ///
     /// This class implements a hardware clock according to the
@@ -123,10 +123,35 @@ class QbvUDPApp;
             }
         };
 
+        struct Qbv_QueuedMessage
+        {
+            simtime_t time;
+            cMessage* msg;
+            TableGPTP* self;
+        public:
+            Qbv_QueuedMessage(const simtime_t& time, cMessage* msg, TableGPTP* self)
+                : time(time)
+                , msg(msg)
+                , self(self)
+            {
+            }
+
+            bool operator<(const Qbv_QueuedMessage& rhs) const
+            {
+                /// because we want to have the element with the *smallest*
+                /// timestamp to be the one with the highest priority, we
+                /// swap > and <
+                return time > rhs.time;
+            }
+        };
+
         /// Queued messages that can't be scheduled yet.
         std::priority_queue<QueuedMessage> queue;
 
         std::priority_queue<App_QueuedMessage> app_queue;
+
+        std::priority_queue<Qbv_QueuedMessage> qbv_queue;
+
         /// The properties of this clock.
         Properties properties;
 
@@ -153,6 +178,7 @@ class QbvUDPApp;
 
         void app_scheduleAtHWtime(const simtime_t time, cMessage* msg , QbvUDPApp* self);
 
+        void qbv_scheduleAtHWtime(const simtime_t time, cMessage* msg , TableGPTP* self);//应该也是可以写成重载的形式
     protected:
         /// Initializes the module.
         virtual void initialize();
@@ -194,6 +220,7 @@ class QbvUDPApp;
 
         friend class EtherGPTP;
         friend class QbvUDPApp;
+        friend class TableGPTP;
     };
 }
 #endif

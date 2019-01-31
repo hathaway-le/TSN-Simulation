@@ -1,3 +1,4 @@
+//author: Hathaway Le
 #ifndef __QbvUDPApp_H
 #define __QbvUDPApp_H
 
@@ -61,6 +62,7 @@ namespace inet {
           ~QbvUDPApp();
         private:
           long int TsnVLANId;
+          int Tsnpriority;
           HardwareClock* clockGptp = nullptr;
           double sendInterval;
     };

@@ -35,6 +35,14 @@ namespace inet {
         selfMsgRespFollow = NULL;
     }
 
+    EtherGPTP::~EtherGPTP()
+    {
+        cancelAndDelete(selfMsgSync);
+        cancelAndDelete(selfMsgDelayResp);
+        cancelAndDelete(selfMsgFollowUp);
+        cancelAndDelete(selfMsgRespFollow);
+    }
+
     void EtherGPTP::initialize(int stage)
     {
         if(stage == 1)//stage == 0 的时候，时钟还未初始化好
@@ -441,6 +449,7 @@ namespace inet {
         tableGptp->setOffset(TimeSync_orign + tableGptp->getCorrectionField()+packetTransmissionTime_follow+tableGptp->getPeerDelay() - (clockGptp->getHWtime()-tableGptp->getOffset()));
         //计算偏移的时候，是和分段线性函数上的硬件时间值相减，getHWtime返回带offset的值，需要处理
         clockGptp->setOffset_self(tableGptp->getOffset());
+        tableGptp->setdiff(clockGptp->getHWtime()-simTime());
         vTimeDifferenceGMafterSync.record(clockGptp->getHWtime()-simTime());
         vTimeDifferenceGMbeforeSync.record(receivedTimeSyncBeforeSync - simTime());
     }

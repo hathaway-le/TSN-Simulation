@@ -1,3 +1,4 @@
+// author: Hathaway Le
 #include <inet/applications/udpapp/QbvUDPApp.h>
 #include <iostream>
 #include <inet/helper/parHelper.h>
@@ -43,6 +44,7 @@ namespace inet {
 
             sendInterval = 1.0/par("TrafficPacketsPerSec").doubleValue();
             TsnVLANId = par("tsn_destVlan").longValue();
+            Tsnpriority =par("tsn_destpriority").longValue();
         }
         else if (stage == 1)
         {
@@ -63,9 +65,13 @@ namespace inet {
 
         L3Address destAddr = chooseDestAddr();
          //比原来版本多了添加par
-        if (TsnVLANId > 0)
+        if (TsnVLANId > -1)
         {
             addParRecursive(payload, "packet_vlan") = TsnVLANId;
+        }
+        if(Tsnpriority > -1)
+        {
+            addParRecursive(payload, "packet_priority") = Tsnpriority;
         }
 
         emit(sentPkSignal, payload);
@@ -174,7 +180,9 @@ namespace inet {
     {
         recordScalar("packets sent", numSent);
         recordScalar("packets received", numReceived);
-        delete clockGptp;//不能放在析构里，我哪知道为啥,因为不是共享指针，只能在这里删除了，EtherGPTP那边就不用了，当然它本来也没删除，居然没出问题，rebuild后出错的问题也没有了
+        delete clockGptp;
+        //不能放在析构里，我哪知道为啥,因为不是共享指针，只要在这里删除了，EtherGPTP那边就不用了，当然它本来也没删除，居然没出问题，rebuild后出错的问题也没有了
+        //原版程序EtherGPTP也没有delete，但是一且正常，照理说clock模块会自己析构，没有看过omnet底层代码，无解
         ApplicationBase::finish();
     }
 

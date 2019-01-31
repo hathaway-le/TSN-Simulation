@@ -48,6 +48,7 @@ void PassiveQueueBase::handleMessage(cMessage *msg)
 
     if (packetRequested > 0) {
         packetRequested--;
+        EV<<"packetRequested--"<<endl;
         emit(enqueuePkSignal, msg);
         emit(dequeuePkSignal, msg);
         emit(queueingTimeSignal, SIMTIME_ZERO);
@@ -65,7 +66,10 @@ void PassiveQueueBase::handleMessage(cMessage *msg)
             delete droppedMsg;
         }
         else
+        {
+            EV<<"notifyListeners()"<<endl;
             notifyListeners();
+        }
     }
 
     if (hasGUI()) {

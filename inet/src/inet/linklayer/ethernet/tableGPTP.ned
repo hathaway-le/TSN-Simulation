@@ -16,6 +16,7 @@ simple TableGPTP
         string nodeType = default("SlaveNode"); // MasterNode, BridgeNode and SlaveNode
         double correctionField = default(0);
         double rateRatio = default(1);
+        string control_gate_table = default("");
     gates:
         input gptpLayerIn[];
         output gptpLayerOut[];

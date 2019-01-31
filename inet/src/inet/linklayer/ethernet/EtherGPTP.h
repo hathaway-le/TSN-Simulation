@@ -95,7 +95,7 @@ namespace inet {
 
       public:
         EtherGPTP();
-
+        ~EtherGPTP();
         void masterPort(cMessage *msg);
         void sendSync();
         void sendFollowUp();

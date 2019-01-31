@@ -11,7 +11,8 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
+// author: Hathaway Le
 
 package inet.applications.udpapp;
 
@@ -25,7 +26,7 @@ simple QbvUDPApp like IUDPApp
         int localPort = default(-1);  // local port (-1: use ephemeral port)
         string destAddresses = default(""); // list of IP addresses, separated by spaces ("": don't send)
         string localAddress = default("");
-        string packetName = default("QbvAppData");
+        string packetName = default("QbvData");
         int destPort;
         volatile int messageLength @unit(B); // length of messages to generate, in bytes
         double startTime @unit(s) = default(this.sendInterval); // application start time (start of the first packet)
@@ -46,8 +47,8 @@ simple QbvUDPApp like IUDPApp
         @statistic[sentPk](title="packets sent"; source=sentPk; record=count,"sum(packetBytes)","vector(packetBytes)"; interpolationmode=none);
         @statistic[rcvdPkLifetime](title="received packet lifetime"; source="messageAge(rcvdPk)"; unit=s; record=stats,vector; interpolationmode=none);
         
-        int tsn_destVlan = default(-1);
-        
+        int tsn_destVlan = default(7);
+        int tsn_destpriority = default(7);
     gates:
         input udpIn @labels(UDPControlInfo/up);
         output udpOut @labels(UDPControlInfo/down);

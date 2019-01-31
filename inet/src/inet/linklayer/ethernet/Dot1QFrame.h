@@ -4,7 +4,7 @@
 #include "inet/linklayer/ethernet/Dot1QFrame_m.h"
 
 #include <inet/linklayer/common/Ieee802Ctrl.h>
-//#include "helper/parHelper.h"
+#include "inet/helper/parHelper.h"
 
 #define DEFAULT_TPID 0x8100
 #define DEFAULT_PCP 0
@@ -17,7 +17,7 @@ namespace inet {
 
 			public:
 				/**
-				 * @brief Copy Constructor
+				 * @brief Copy Constructor,除abstract的成员，其他的都会被构造
 				 */
 				Dot1QFrame(const Dot1QFrame& other) :
 						Dot1QFrame_Base(other) {
@@ -58,13 +58,13 @@ namespace inet {
 
 				virtual Dot1QFrame* dup() const {
 					Dot1QFrame* dup = new Dot1QFrame(*this);
-
-					dup->setTCI_Size(getTCI_Size());
-					dup->setTPID(getTPID());
-					dup->setPCP(getPCP());
-					dup->setDEI(getDEI());
-					dup->setVID(getVID());
-
+/*
+					dup->setTCI_Size(this->getTCI_Size());//下面五行是否是多余的
+					dup->setTPID(this->getTPID());
+					dup->setPCP(this->getPCP());
+					dup->setDEI(this->getDEI());
+					dup->setVID(this->getVID());
+*/
 					return dup;
 				}
 

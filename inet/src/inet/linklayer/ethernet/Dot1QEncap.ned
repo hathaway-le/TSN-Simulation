@@ -4,8 +4,9 @@ simple Dot1QEncap like IEtherEncap
 {
     parameters:
         // TSN Scenario Configuration
-        int dot1Q_NullStreamVlan = default(1);
-
+        int dot1Q_NullStreamVlan = default(7);
+		int dot1Q_NullStreampriority = default(7);
+		
         bool useSNAP = default(false);  // create EtherFrameWithSNAP frames instead of EthernetIIFrame
         @display("i=block/square");
         @signal[encapPk](type=cPacket);

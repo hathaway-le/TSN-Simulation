@@ -12,12 +12,13 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
+// Modifier: Hathaway Le
 
 package inet.linklayer.ethernet;
 
 import inet.common.queue.DropTailQueue;
 import inet.common.queue.IOutputQueue;
-import inet.common.queue.PriorityScheduler;
+import inet.common.queue.QbvScheduler;
 
 
 //
@@ -41,7 +42,7 @@ module EtherQbvQueue like IOutputQueue
             parameters:
                 @display("p=50,100");
         }
-        scheduler: PriorityScheduler {
+        scheduler: QbvScheduler {
             @display("p=350,100");
         }
         queue[numOfQueues]: <dataQueueType> like IOutputQueue {
