@@ -302,19 +302,29 @@ namespace inet {
         take(msg);//your contain class has to take ownership of the inserted messages, and release them when they are removed from the message
 
         simtime_t nowHW = getHWtime();
+        simtime_t interval = time - nowHW;
+        simtime_t time_nc = time;
 
-        if (time <= nowHW) {
+        simtime_t now = simTime();
+
+        int k = storageWindow->indexOf(now);
+
+        const StorageWindow::HoldPoint& hp = storageWindow->at(k);
+
+        time_nc =nowHW + interval * (1 + hp.drift);
+
+        if (time_nc <= nowHW) {
             // message is in the past
             return;
         }
-        if(time<=simTime())
+        if(time_nc<=simTime())
         {
             self->scheduleAtInObject(simTime(),msg);
             //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
         }
         else
         {
-            self->scheduleAtInObject(time,msg);
+            self->scheduleAtInObject(time_nc,msg);
         }
 /*        simtime_t real;
 
@@ -355,12 +365,31 @@ namespace inet {
         take(msg);//your contain class has to take ownership of the inserted messages, and release them when they are removed from the message
 
         simtime_t nowHW = getHWtime();
+        simtime_t interval = time - nowHW;
+        simtime_t time_nc = time;
 
-        if (time <= nowHW) {
+        simtime_t now = simTime();
+
+        int k = storageWindow->indexOf(now);
+
+        const StorageWindow::HoldPoint& hp = storageWindow->at(k);
+
+        time_nc =nowHW + interval * (1 + hp.drift);
+
+        if (time_nc <= nowHW) {
             // message is in the past
             return;
         }
-
+        if(time_nc<=simTime())
+        {
+            self->scheduleAtInObject(simTime(),msg);
+            //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
+        }
+        else
+        {
+            self->scheduleAtInObject(time_nc,msg);
+        }
+/*
         simtime_t real;
 
         if (HWtoSimTime(time, real))
@@ -391,7 +420,7 @@ namespace inet {
             {
                 app_queue.push(App_QueuedMessage(time, msg,self));//大于窗最大值的话放入优先级队列，QueuedMessage的operator<重载了
             }
-        }
+        }*/
     }
 
     void HardwareClock::qbv_scheduleAtHWtime(const simtime_t time, cMessage* msg, TableGPTP* self)
@@ -400,19 +429,31 @@ namespace inet {
         take(msg);//your contain class has to take ownership of the inserted messages, and release them when they are removed from the message
 
         simtime_t nowHW = getHWtime();
+        simtime_t interval = time - nowHW;
+        simtime_t time_nc = time;
 
-        if (time <= nowHW) {
+        simtime_t now = simTime();
+
+        int k = storageWindow->indexOf(now);
+
+        const StorageWindow::HoldPoint& hp = storageWindow->at(k);
+
+        time_nc =nowHW + interval * (1 + hp.drift);
+        //原来的时钟模型是基于simtime的，不管怎么校准，simtime作为真实时间是在不断流逝的，即校准不能直接改动时钟模型，因此我们累计offset，
+        //此处需要调度未来的的时间,我们不能直接套用原来的时钟模型（如注释处 basetime + interval + offset -> simtime），那样校准会失去意义，误差又会重现
+        //我们跳出时钟模型的束缚，读取当前时间时钟偏移导数hp.drift，粗略地计算未来的硬件时间
+        if (time_nc <= nowHW) {
             // message is in the past
             return;
         }
-        if(time<=simTime())
+        if(time_nc<=simTime())
         {
             self->scheduleAtInObject(simTime(),msg);
             //在允许误差的情况下，让所有消息都发送出去,这样可能会导致本来应该间隔发送的2个msg，同时发送，使用外部队列时，内部队列失效，报错
         }
         else
         {
-            self->scheduleAtInObject(time,msg);
+            self->scheduleAtInObject(time_nc,msg);
         }
 /*
         simtime_t real;

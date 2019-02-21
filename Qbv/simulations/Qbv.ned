@@ -14,16 +14,22 @@ network Qbv
     @display("bgb=550,360");
     submodules:
         gPtpBridge0: GPtpBridge {
-            @display("p=230,179");
+            @display("p=209,179");
+        }
+        gPtpBridge1: GPtpBridge {
+            @display("p=314,179");
         }
         gPtpMaster: GPtpMaster {
-            @display("p=91,180");
+            @display("p=97,120");
         }
-        gPtpSlave: GPtpSlave {
-            @display("p=384,180");
+        gPtpSlave0: GPtpSlave {
+            @display("p=436,120");
+        }
+        gPtpSlave1: GPtpSlave {
+            @display("p=436,253");
         }
         standardHost0: StandardHost {
-            @display("p=230,61");
+            @display("p=97,253");
         }
         configurator: IPv4NetworkConfigurator {
             @display("p=83,38");
@@ -31,5 +37,7 @@ network Qbv
     connections:
         gPtpMaster.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpBridge0.ethg++;
         standardHost0.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpBridge0.ethg++;
-        gPtpBridge0.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpSlave.ethg++;
+        gPtpBridge0.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpBridge1.ethg++;
+        gPtpBridge1.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpSlave0.ethg++;
+        gPtpBridge1.ethg++ <--> {  datarate = 1Gbps; delay = 250ns; } <--> gPtpSlave1.ethg++;        
 }

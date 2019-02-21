@@ -75,7 +75,7 @@ namespace inet {
             }
             cur_state = w_gptp;
             EV<<"gptp start "<<simTime()<<endl;
-            clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime() +0.000015,selfQbv,this);
+            clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime() +0.000005,selfQbv,this);
             for (int i = 0; i < numberOfGates; i++)
             {
                 send(msg->dup(), "gptpLayerOut", i);
@@ -91,13 +91,13 @@ namespace inet {
                     case w_gptp:
                         cur_state = w_pro;
                         EV<<"pro start "<<simTime()<<endl;
-                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.000020,selfQbv,this);
+                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.000015,selfQbv,this);
 //                        scheduleAt(simTime()+0.000010,selfQbv);
                         break;
                     case w_pro:
                         cur_state = w_unpro;
                         EV<<"unpro start "<<simTime()<<endl;
-                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.009950,selfQbv,this);
+                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.009965,selfQbv,this);
 //                        scheduleAt(simTime()+0.000015,selfQbv);
                         break;
                     case w_unpro:
