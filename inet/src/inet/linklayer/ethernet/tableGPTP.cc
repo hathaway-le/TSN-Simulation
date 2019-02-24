@@ -29,6 +29,8 @@ namespace inet {
             numberOfGates = gateSize("gptpLayerIn");
             originTimestamp=0;
             offset=0;
+            cModule* gPtpNode=getParentModule();//爸爸的爸爸，host or bridge 不是endstation(nodebase)
+            nodeType = gPtpNode->par("gPtpNodeType");
             if(selfQbv==NULL)
                 selfQbv = new cMessage("selfQbv");
             cStringTokenizer tokenizer0(par("control_gate_table").stringValue(), ";");
@@ -63,19 +65,22 @@ namespace inet {
     {
         if(msg->arrivedOn("gptpLayerIn"))
         {
-            if(qbvstart == false)//从接受到第一个followup为开始
+            if(nodeType == BRIDGE_NODE)
             {
-                qbvstart = true;
-                //每次只需改变cur_state
+                if(qbvstart == false)//从接受到第一个followup为开始
+                {
+                    qbvstart = true;
+                    //每次只需改变cur_state
 
-//                SimTime time_now = clockGptp->getHWtime();
-//                SimTime time_int = all_gate_state[cur_state].duration;
-//                SimTime time_next = time_now+time_int;
-//                scheduleAt(simTime()+0.000010,selfQbv);
+    //                SimTime time_now = clockGptp->getHWtime();
+    //                SimTime time_int = all_gate_state[cur_state].duration;
+    //                SimTime time_next = time_now+time_int;
+    //                scheduleAt(simTime()+0.000010,selfQbv);
+                }
+                cur_state = w_gptp;
+                EV<<"gptp start "<<simTime()<<endl;
+                clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime() +0.000005,selfQbv,this);
             }
-            cur_state = w_gptp;
-            EV<<"gptp start "<<simTime()<<endl;
-            clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime() +0.000005,selfQbv,this);
             for (int i = 0; i < numberOfGates; i++)
             {
                 send(msg->dup(), "gptpLayerOut", i);
@@ -97,7 +102,8 @@ namespace inet {
                     case w_pro:
                         cur_state = w_unpro;
                         EV<<"unpro start "<<simTime()<<endl;
-                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.009965,selfQbv,this);
+                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.000965,selfQbv,this);
+//                        clockGptp->qbv_scheduleAtHWtime(clockGptp->getHWtime()+0.009965,selfQbv,this);
 //                        scheduleAt(simTime()+0.000015,selfQbv);
                         break;
                     case w_unpro:

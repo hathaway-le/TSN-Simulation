@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <inet/hardwareclock/hardwareclock.h>
+#include <inet/linklayer/ethernet/EtherGPTP.h>
 
 using namespace omnetpp;
 namespace inet {
@@ -37,6 +38,7 @@ namespace inet {
 
         std::vector<gate_state> all_gate_state;
         int cur_state;//用来当cur_gate_state的index
+        int nodeType;
 
         int numberOfGates;
         bool qbvstart = false;
