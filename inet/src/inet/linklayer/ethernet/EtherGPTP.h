@@ -49,7 +49,7 @@ namespace inet {
         HardwareClock* clockGptp;
         int portType;
         int nodeType;
-
+        int start=0;
         SimTime rateRatio;
 
         // errorTime is time difference between MAC transmition
@@ -87,11 +87,13 @@ namespace inet {
         /* Statistics information */
         cOutVector vTimeDifferenceGMafterSync;
         cOutVector vTimeDifferenceGMbeforeSync;
+        cDoubleHistogram deviationHistogram;
 
       protected:
         virtual void initialize(int stage) override;
         virtual void handleMessage(cMessage *msg) override;
         int numInitStages() const {return 2;}
+        virtual void finish();
 
       public:
         EtherGPTP();

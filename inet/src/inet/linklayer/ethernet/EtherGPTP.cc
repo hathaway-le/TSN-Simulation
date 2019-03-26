@@ -89,7 +89,13 @@ namespace inet {
 
                 requestMsg = new cMessage("requestToSendSync");
              }
+            deviationHistogram.setName("time_deviation_histogram");
         }
+    }
+
+    void EtherGPTP::finish()
+    {
+        deviationHistogram.recordAs("time_deviation_histogram");
     }
 
     void EtherGPTP::handleMessage(cMessage *msg)
@@ -452,6 +458,14 @@ namespace inet {
         tableGptp->setdiff(clockGptp->getHWtime()-simTime());
         vTimeDifferenceGMafterSync.record(clockGptp->getHWtime()-simTime());
         vTimeDifferenceGMbeforeSync.record(receivedTimeSyncBeforeSync - simTime());
+        if(start==0)
+        {
+            start=1;
+        }
+        else
+        {
+            deviationHistogram.collect(fabs(clockGptp->getHWtime()-simTime()));
+        }
     }
 
     void EtherGPTP::processPdelayResp(gPtp_PdelayResp* gptp)
