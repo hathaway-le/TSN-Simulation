@@ -289,8 +289,8 @@ namespace inet {
 
         /* Pdelay_Resp message length 54 byte */
         gptp->setByteLength(PDELAY_RESP_PACKET_SIZE);
-        gptp->setSentTime(clockGptp->getHWtime());//t3的真实数据，本来应该放在follow里发送的，当然确实也发送了，但是实际计算的时候还是从这个帧里取的数
-        gptp->setRequestReceiptTimestamp(receivedTimeResponder);//t2
+        gptp->setSentTime(tableGptp->getRateRatio().dbl()*clockGptp->getHWtime());//t3的真实数据，本来应该放在follow里发送的，当然确实也发送了，但是实际计算的时候还是从这个帧里取的数
+        gptp->setRequestReceiptTimestamp(tableGptp->getRateRatio().dbl()*receivedTimeResponder);//t2,统一用主节点计数值
         frame->encapsulate(gptp);
 
         send(frame, "lowerLayerOut");
