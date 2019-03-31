@@ -20,7 +20,7 @@ namespace inet {
 
     /* Below is used to calculate packet transmission time */
     enum gPtpHeader: int {
-        MAC_HEADER = 22,
+        MAC_HEADER = 26,//算上vlan
         CRC_CHECKSUM = 4
     };
 
